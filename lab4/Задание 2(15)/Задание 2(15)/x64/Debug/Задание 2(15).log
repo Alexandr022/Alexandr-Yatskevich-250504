@@ -1,0 +1,9 @@
+﻿  Задание 2(15).c
+C:\Users\Asus\Desktop\labs\lab4\Задание 2(15)\Задание 2(15)\Задание 2(15).c(28,49): warning C4047: функция: "const char *const " отличается по уровням косвенного обращения от "int"
+C:\Users\Asus\Desktop\labs\lab4\Задание 2(15)\Задание 2(15)\Задание 2(15).c(28,9): warning C4024: printf: различные типы для формального и фактического параметров 1
+C:\Users\Asus\Desktop\labs\lab4\Задание 2(15)\Задание 2(15)\Задание 2(15).c(33,78): warning C4047: ==: "int (__cdecl *)(void)" отличается по уровням косвенного обращения от "int"
+C:\Users\Asus\Desktop\labs\lab4\Задание 2(15)\Задание 2(15)\Задание 2(15).c(39,78): warning C4047: ==: "int (__cdecl *)(void)" отличается по уровням косвенного обращения от "int"
+C:\Users\Asus\Desktop\labs\lab4\Задание 2(15)\Задание 2(15)\Задание 2(15).c(73,8): warning C4244: функция: преобразование "time_t" в "unsigned int", возможна потеря данных
+C:\Users\Asus\Desktop\labs\lab4\Задание 2(15)\Задание 2(15)\Задание 2(15).c(44): warning C4716: input_check: должна возвращать значение
+C:\Users\Asus\Desktop\labs\lab4\Задание 2(15)\Задание 2(15)\Задание 2(15).c(124): warning C4716: find_strings_without_zero: должна возвращать значение
+  Задание 2(15).vcxproj -> C:\Users\Asus\Desktop\labs\lab4\Задание 2(15)\x64\Debug\Задание 2(15).exe
