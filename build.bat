@@ -1,1 +1,1 @@
-msbuild lab3\lab3\lab3.vcxproj
+msbuild lab4\lab4\lab4.vcxproj
