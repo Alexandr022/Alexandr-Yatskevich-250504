@@ -1,4 +1,5 @@
-﻿  library.c
+﻿  lab4.c
+  library.c
 D:\lab4\lab4\library.c(12,22): warning C4133: =: несовместимые типы - из "Node *" в "Node *"
 D:\lab4\lab4\library.c(13,24): warning C4133: =: несовместимые типы - из "Node *" в "Node *"
 D:\lab4\lab4\library.c(26,27): warning C4133: функция: несовместимые типы - из "Node *" в "Node *"
@@ -11,4 +12,5 @@ D:\lab4\lab4\library.c(104,32): warning C4133: функция: несовмес�
 D:\lab4\lab4\library.c(108,33): warning C4133: функция: несовместимые типы - из "Node *" в "Node *"
 D:\lab4\lab4\library.c(133,24): warning C4133: функция: несовместимые типы - из "Node *" в "Node *"
 D:\lab4\lab4\library.c(134,25): warning C4133: функция: несовместимые типы - из "Node *" в "Node *"
+  Создание кода...
   lab4.vcxproj -> D:\lab4\x64\Debug\lab4.exe
