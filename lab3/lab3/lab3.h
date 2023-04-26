@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "D:\Bibs\InputManager\InputManager\InputManager.h"
+#include "InputManager.h"
 
 #pragma pack(push, 1)
 
