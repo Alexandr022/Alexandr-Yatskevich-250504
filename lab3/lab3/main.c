@@ -16,8 +16,12 @@ int main()
 		rewind(stdin);
 	}
 
-	FILE* outputBMP;
+	BMPfile BMP = initBMPstruct(inputBMP);
 	
+	menu(BMP);
+
+	FILE* outputBMP;
+
 	String outputBMPname = getStringFromKayboard("--Enter output filename--");
 
 	while (fopen_s(&outputBMP, outputBMPname.String, "wb") != 0)
@@ -26,13 +30,9 @@ int main()
 		outputBMPname = getStringFromKayboard("--Enter outout filename--");
 		rewind(stdin);
 	}
-
-	BMPfile BMP = initBMPstruct(inputBMP);
-
-	menu(BMP, outputBMP);
+;
 	outputBMPfile(outputBMP, BMP);
-
-	free(BMP.pixels);
+	printf("New image successfully saved.\n");
 
 	fclose(inputBMP);
 	fclose(outputBMP);

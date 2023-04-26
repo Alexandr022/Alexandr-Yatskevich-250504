@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Bibs\InputManager\InputManager\InputManager.c" />
+    <ClCompile Include="InputManager.c" />
     <ClCompile Include="lab3.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="menu.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Bibs\InputManager\InputManager\InputManager.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="lab3.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

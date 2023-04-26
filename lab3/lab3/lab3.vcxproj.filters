@@ -21,10 +21,10 @@
     <ClCompile Include="menu.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Bibs\InputManager\InputManager\InputManager.c">
-      <Filter>Файлы ресурсов</Filter>
-    </ClCompile>
     <ClCompile Include="main.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,8 +32,8 @@
     <ClInclude Include="lab3.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Bibs\InputManager\InputManager\InputManager.h">
-      <Filter>Файлы ресурсов</Filter>
+    <ClInclude Include="InputManager.h">
+      <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

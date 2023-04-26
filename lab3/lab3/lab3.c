@@ -6,17 +6,18 @@
 BMPfile initBMPstruct(FILE* file)
 {
 	BMPfile BMP;
-
 	fread(&BMP.BMPHead, sizeof(BMP.BMPHead), 1, file);
 	fread(&BMP.BMPinfo, sizeof(BMP.BMPinfo), 1, file);
 
-	BMP.pixels = (PIXELS*)malloc(BMP.BMPinfo.width * BMP.BMPinfo.height * sizeof(PIXELS*));
+	fseek(file, 0, SEEK_SET);
+	BMP.head = (unsigned char*)malloc(BMP.BMPHead.offset);
+	fread(BMP.head, sizeof(unsigned char), BMP.BMPHead.offset, file);
+
+	BMP.pixels = (unsigned char*)malloc(BMP.BMPinfo.width * BMP.BMPinfo.height * BMP.BMPinfo.bitsPixels / 8);
 
 	for (int i = 0; !feof(file); i++)
 	{
-		PIXELS pixel;
-		fread(&pixel, sizeof(PIXELS), 1, file);
-		BMP.pixels[i] = pixel;
+		fread(&BMP.pixels[i], sizeof(unsigned char), 1, file);
 	}
 
 	return BMP;
@@ -24,77 +25,155 @@ BMPfile initBMPstruct(FILE* file)
 
 void outputBMPfile(FILE* file, BMPfile BMP)
 {
-	fwrite(&BMP.BMPHead, sizeof(BMP.BMPHead), 1, file);
-	fwrite(&BMP.BMPinfo, sizeof(BMP.BMPinfo), 1, file);
+	fwrite(BMP.head, sizeof(unsigned char), BMP.BMPHead.offset, file);
 
-	for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height + 1; i++)
+	for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height * BMP.BMPinfo.bitsPixels / 8; i++)
 	{
-		fwrite(&BMP.pixels[i], sizeof(PIXELS), 1, file);
+		fwrite(&BMP.pixels[i], sizeof(unsigned char), 1, file);
 	}
 }
 
 void convertToNegative(BMPfile BMP)
 {
-	for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height; i++)
+	for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height * BMP.BMPinfo.bitsPixels / 8; i++)
 	{
-		BMP.pixels[i].Red = 255 - BMP.pixels[i].Red;
-		BMP.pixels[i].Green = 255 - BMP.pixels[i].Green;
-		BMP.pixels[i].Blue = 255 - BMP.pixels[i].Blue;
+		BMP.pixels[i]= ~BMP.pixels[i];
 	}
 }
 
 void convertToBlackAndWhite(BMPfile BMP)
 {
-	for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height; i++)
+	if (BMP.BMPinfo.bitsPixels == 24)
 	{
-		int gray = (BMP.pixels[i].Red + BMP.pixels[i].Green + BMP.pixels[i].Blue) / 3;
-		BMP.pixels[i].Red = BMP.pixels[i].Green = BMP.pixels[i].Blue = gray;
-	}
-}
+		int gray;
 
-void medianFiltering(BMPfile BMP, int count)
-{
-	int N = count / 2;
-	for (int y = N; y < BMP.BMPinfo.height - N; y++)
-	{
-		for (int x = N; x < BMP.BMPinfo.width - N; x++)
+		for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height * BMP.BMPinfo.bitsPixels / 8; i += 3)
 		{
-			PIXELS* window = (PIXELS*)malloc(count * count * sizeof(PIXELS));
-			int i = 0;
-			for (int w = -N; w <= N; w++)
+			gray = (BMP.pixels[i] + BMP.pixels[i + 1] + BMP.pixels[i + 2]) / 3;
+			BMP.pixels[i] = gray;
+			BMP.pixels[i + 1] = gray;
+			BMP.pixels[i + 2] = gray;
+		}
+	}
+	if (BMP.BMPinfo.bitsPixels == 16)
+	{
+		int i, j;
+		unsigned char grayValue;
+		int brightness = 128; 
+		
+		for (i = 0; i < BMP.BMPinfo.height; i++)
+		{
+			for (j = 0; j < BMP.BMPinfo.width; j++)
 			{
-				for (int h = -N; h <= N; h++)
+				grayValue = 0.2989 * BMP.pixels[(i * BMP.BMPinfo.width + j) * 3 + 2] + 0.5870 * BMP.pixels[(i * BMP.BMPinfo.width + j) * 3 + 1] + 0.1140 * BMP.pixels[(i * BMP.BMPinfo.width + j) * 3];
+
+				if (grayValue >= brightness)
 				{
-					window[i++] = BMP.pixels[BMP.BMPinfo.width * (y + w) + (x + h)];
+					BMP.pixels[(i * BMP.BMPinfo.width + j) * 3 + 2] = 255;
+					BMP.pixels[(i * BMP.BMPinfo.width + j) * 3 + 1] = 255;
+					BMP.pixels[(i * BMP.BMPinfo.width + j) * 3] = 255;
+				}
+				else
+				{
+					BMP.pixels[(i * BMP.BMPinfo.width + j) * 3 + 2] = 0;
+					BMP.pixels[(i * BMP.BMPinfo.width + j) * 3 + 1] = 0;
+					BMP.pixels[(i * BMP.BMPinfo.width + j) * 3] = 0;
 				}
 			}
-			for (int i = 0; i < count * count; i++)
-			{
-				for (int j = 0; j < count * count; j++)
-				{
-					if (window[i].Red + window[i].Green + window[i].Blue < window[j].Red + window[j].Green + window[j].Blue)
-					{
-						PIXELS buf = window[i];
-						window[i] = window[j];
-						window[j] = buf;
-					}
-				}
-			}
-			BMP.pixels[BMP.BMPinfo.width * y + x] = window[count * count / 2];
+		}
+	}
+
+	else
+	{
+		int gray;
+
+		for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height * BMP.BMPinfo.bitsPixels / 8; i += 3)
+		{
+			gray = (0.2989 * BMP.pixels[i] + 0.5870 * BMP.pixels[i + 1] + 0.1140 * BMP.pixels[i + 2]) / 3;
+			BMP.pixels[i] = gray;
+			BMP.pixels[i + 1] = gray;
+			BMP.pixels[i + 2] = gray;
 		}
 	}
 }
 
-void gammaCorrection(BMPfile BMP, double count)
+void medianFilter(BMPfile* BMP, int filterSize)
 {
-	for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height; i++)
+	int pad = (4 - ((BMP->BMPinfo.width * BMP->BMPinfo.bitsPixels / 8) % 4)) % 4;
+
+	unsigned char* tempPixels = (unsigned char*)malloc(BMP->BMPinfo.width * BMP->BMPinfo.height * BMP->BMPinfo.bitsPixels / 8);
+
+	for (int i = 0; i < BMP->BMPinfo.width * BMP->BMPinfo.height * BMP->BMPinfo.bitsPixels / 8; i++)
 	{
-		BMP.pixels[i].Red = pow(BMP.pixels[i].Red / 255.0, count) * 255.0;
-		BMP.pixels[i].Green = pow(BMP.pixels[i].Green / 255.0, count) * 255.0;
-		BMP.pixels[i].Blue = pow(BMP.pixels[i].Blue / 255.0, count) * 255.0;
+		tempPixels[i] = BMP->pixels[i];
 	}
+
+	for (unsigned int y = 0; y < BMP->BMPinfo.height; y++)
+	{
+		for (unsigned int x = 0; x < BMP->BMPinfo.width; x++)
+		{
+			int red = 0;
+			int green = 0;
+			int blue = 0;
+			int count = 0;
+
+			for (int fy = -filterSize / 2; fy <= filterSize / 2; fy++)
+			{
+				for (int fx = -filterSize / 2; fx <= filterSize / 2; fx++)
+				{
+					int xi = x + fx;
+					int yi = y + fy;
+
+					if (xi < 0 || xi >= BMP->BMPinfo.width || yi < 0 || yi >= BMP->BMPinfo.height)
+					{
+						continue;
+					}
+
+					int index = ((BMP->BMPinfo.height - yi - 1) * BMP->BMPinfo.width + xi) * BMP->BMPinfo.bitsPixels / 8;
+					int b = tempPixels[index];
+					int g = tempPixels[index + 1];
+					int r = tempPixels[index + 2];
+					blue += b;
+					green += g;
+					red += r;
+					count++;
+				}
+			}
+			int index = ((BMP->BMPinfo.height - y - 1) * BMP->BMPinfo.width + x) * BMP->BMPinfo.bitsPixels / 8;
+			BMP->pixels[index] = (unsigned char)(blue / count);
+			BMP->pixels[index + 1] = (unsigned char)(green / count);
+			BMP->pixels[index + 2] = (unsigned char)(red / count);
+		}
+	}
+
+	free(tempPixels);
 }
 
+int comparePixels(const void* a, const void* b)
+{
+	unsigned char pixelA = *(unsigned char*)a;
+	unsigned char pixelB = *(unsigned char*)b;
+
+	if (pixelA < pixelB)
+	{
+		return -1;
+	}
+	if (pixelA > pixelB)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+void gammaCorrection(BMPfile BMP, double gamma)
+{
+	for (int i = 0; i < BMP.BMPinfo.width * BMP.BMPinfo.height * BMP.BMPinfo.bitsPixels / 8; i++)
+	{
+		double oldValue = (double)BMP.pixels[i];
+		double newValue = pow(oldValue / 255.0, 1.0 / gamma) * 255.0;
+		BMP.pixels[i] = (unsigned char)newValue;
+	}
+}
 
 // Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
 // Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
