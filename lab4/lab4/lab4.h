@@ -8,7 +8,7 @@
 #include <stdarg.h>
 #include <time.h>
 #include <ctype.h>
-#include "/Bibs/InputManager/InputManager/InputManager.h"
+#include "InputManager.h"
 
 #define LENGTH 256
 #define ZERO_STRING "NULL"
