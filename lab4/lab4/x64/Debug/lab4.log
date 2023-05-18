@@ -1,0 +1,4 @@
+﻿  InputManager.c
+D:\lab4\lab4\InputManager.c(353,72): warning C4244: функция: преобразование "int" в "float", возможна потеря данных
+D:\lab4\lab4\InputManager.c(362,86): warning C4244: функция: преобразование "int" в "float", возможна потеря данных
+  lab4.vcxproj -> D:\lab4\x64\Debug\lab4.exe
